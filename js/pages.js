@@ -63,24 +63,35 @@
     const user = App.requireAuth();
     if (!user) return;
     document.querySelector('[data-hello]').textContent = `Merhaba ${user.name} 👋`;
+
+    if (user.role === 'mentor') {
+      App.initMentorDashboard(user);
+      return;
+    }
+
     render();
 
     function render() {
       const sub = App.getSubscription(user.id);
-      const apts = App.getUserAppointments(user.id).sort((a, b) => new Date(b.date) - new Date(a.date));
-      const upcoming = apts.filter(a => a.status === 'upcoming');
-      const past = apts.filter(a => a.status !== 'upcoming');
+      const apts = App.getUserAppointments(user.id).sort((a, b) => new Date(b.date + 'T' + b.time) - new Date(a.date + 'T' + a.time));
+      const active = apts.filter(a => ['requested', 'approved', 'paid'].includes(a.status));
+      const past = apts.filter(a => !['requested', 'approved', 'paid'].includes(a.status));
       const planLabels = { monthly: 'Aylık', quarterly: '3 Aylık', yearly: 'Yıllık' };
       const subActive = sub && new Date(sub.endDate) > new Date();
+      const pendingPayment = apts.filter(a => a.status === 'approved').length;
 
       document.querySelector('[data-sidebar]').innerHTML = `
         <div class="dash-stat">
-          <div class="dash-stat-value">${upcoming.length}</div>
+          <div class="dash-stat-value">${active.filter(a => a.status === 'paid').length}</div>
           <div class="text-muted">Yaklaşan Seans</div>
         </div>
+        <div class="dash-stat ${pendingPayment ? 'dash-stat-alert' : ''}">
+          <div class="dash-stat-value">${pendingPayment}</div>
+          <div class="text-muted">Ödeme Bekleyen</div>
+        </div>
         <div class="dash-stat">
-          <div class="dash-stat-value">${past.length}</div>
-          <div class="text-muted">Geçmiş Seans</div>
+          <div class="dash-stat-value">${apts.filter(a => a.status === 'completed').length}</div>
+          <div class="text-muted">Tamamlanan</div>
         </div>
         <div class="card">
           <h4 style="font-size:0.85rem; color:var(--c-muted); text-transform:uppercase; letter-spacing:1px;">Üyelik</h4>
@@ -97,21 +108,19 @@
           <h4 style="font-size:0.85rem; color:var(--c-muted); text-transform:uppercase; letter-spacing:1px;">Profil</h4>
           <p style="margin:0.5rem 0;"><strong>${user.name}</strong></p>
           <p class="text-muted" style="font-size:0.85rem;">${user.email}</p>
-          <span class="badge badge-primary" style="margin-top:0.5rem;">
-            ${user.role === 'client' ? 'Danışan' : user.role === 'mentor' ? 'Mentör' : 'Mentör Adayı'}
-          </span>
+          <span class="badge badge-primary" style="margin-top:0.5rem;">Danışan</span>
         </div>`;
 
       document.querySelector('[data-content]').innerHTML = `
-        <h2 class="mb-md">Yaklaşan Seanslarım</h2>
-        ${upcoming.length === 0 ? `
+        <h2 class="mb-md">Randevularım</h2>
+        ${active.length === 0 ? `
           <div class="empty-state card">
             <div class="empty-state-icon">📅</div>
-            <p>Henüz yaklaşan bir seansın yok.</p>
+            <p>Henüz aktif bir randevun yok.</p>
             <a href="mentors.html" class="btn btn-primary" style="margin-top:1rem;">Mentör Bul</a>
-          </div>` : upcoming.map(a => apptHtml(a, true)).join('')}
-        ${past.length ? `<h2 style="margin: 2rem 0 1rem;">Geçmiş Seanslar</h2>
-          ${past.map(a => apptHtml(a, false)).join('')}` : ''}`;
+          </div>` : active.map(apptHtml).join('')}
+        ${past.length ? `<h2 style="margin: 2rem 0 1rem;">Geçmiş</h2>
+          ${past.map(apptHtml).join('')}` : ''}`;
 
       document.querySelectorAll('[data-cancel]').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -124,26 +133,99 @@
       });
     }
 
-    function apptHtml(a, canCancel) {
+    function apptHtml(a) {
       const dt = new Date(a.date + 'T' + a.time);
-      const statusBadge = {
-        upcoming: '<span class="badge badge-primary">Yaklaşan</span>',
-        cancelled: '<span class="badge badge-danger">İptal</span>',
-        completed: '<span class="badge badge-success">Tamamlandı</span>'
-      }[a.status];
+      const st = App.STATUS_LABEL[a.status];
+      const canCancel = ['requested', 'approved', 'paid'].includes(a.status) && dt.getTime() > Date.now();
       return `
         <div class="appointment-item">
           <div class="appointment-info">
             <h4>${a.mentorName}</h4>
-            <p>${dt.toLocaleDateString('tr-TR', { weekday:'long', day:'numeric', month:'long' })} • ${a.time} • ${a.type === 'online' ? '🖥️ Online' : '🤝 Yüz Yüze'}</p>
+            <p>${dt.toLocaleDateString('tr-TR', { weekday:'long', day:'numeric', month:'long' })} • ${a.time} • ${a.type === 'online' ? '🖥️ Online' : '🤝 Yüz Yüze'} • ₺${a.price || ''}</p>
           </div>
-          <div class="flex" style="align-items:center;">
-            ${statusBadge}
-            ${canCancel && a.meetLink ? `<a href="${a.meetLink}" target="_blank" class="btn btn-sm btn-primary">Katıl</a>` : ''}
+          <div class="flex" style="align-items:center; flex-wrap:wrap; gap:0.5rem;">
+            <span class="badge ${st.cls}">${st.label}</span>
+            ${a.status === 'approved' ? `<a href="payment.html?id=${a.id}" class="btn btn-sm btn-primary">💳 Ödeme Yap</a>` : ''}
+            ${a.status === 'paid' && a.meetLink ? `<a href="${a.meetLink}" target="_blank" class="btn btn-sm btn-primary">Katıl</a>` : ''}
             ${canCancel ? `<button class="btn btn-sm btn-ghost" data-cancel="${a.id}">İptal</button>` : ''}
           </div>
         </div>`;
     }
+  };
+
+  App.initPaymentPage = function () {
+    const user = App.requireAuth();
+    if (!user) return;
+    const host = document.querySelector('[data-payment]');
+    const id = new URLSearchParams(location.search).get('id');
+    const apt = App.Storage.get(App.Storage.keys.APPOINTMENTS, []).find(a => a.id === id);
+    if (!apt || apt.clientId !== user.id) {
+      host.innerHTML = `<div class="card"><h3>Randevu bulunamadı</h3>
+        <a href="dashboard.html" class="btn btn-primary" style="margin-top:1rem;">Panele Dön</a></div>`;
+      return;
+    }
+    if (apt.status !== 'approved') {
+      const msg = {
+        requested: 'Bu randevu henüz mentör onayını beklemekte.',
+        paid: 'Bu randevunun ödemesi zaten alınmış.',
+        cancelled: 'Bu randevu iptal edildi.',
+        rejected: 'Bu randevu reddedildi.',
+        completed: 'Bu randevu tamamlandı.'
+      }[apt.status] || 'Bu randevu için ödeme alınamaz.';
+      host.innerHTML = `<div class="card"><h3>${msg}</h3>
+        <a href="dashboard.html" class="btn btn-primary" style="margin-top:1rem;">Panele Dön</a></div>`;
+      return;
+    }
+
+    const dtStr = new Date(apt.date + 'T' + apt.time).toLocaleDateString('tr-TR', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    });
+
+    host.innerHTML = `
+      <div class="grid grid-2" style="gap:2rem; align-items:start;">
+        <form class="card" data-pay-form>
+          <h3 class="mb-md">Kart Bilgileri</h3>
+          <div class="form-group"><label>Kart Üzerindeki İsim</label>
+            <input type="text" class="form-input" name="name" required placeholder="AD SOYAD"></div>
+          <div class="form-group"><label>Kart Numarası</label>
+            <input type="text" class="form-input" name="number" required maxlength="19" placeholder="4242 4242 4242 4242"></div>
+          <div class="grid grid-2" style="gap:1rem;">
+            <div class="form-group"><label>Son Kullanma</label>
+              <input type="text" class="form-input" name="exp" required placeholder="AA/YY" maxlength="5"></div>
+            <div class="form-group"><label>CVV</label>
+              <input type="text" class="form-input" name="cvv" required maxlength="4" placeholder="123"></div>
+          </div>
+          <div class="alert alert-info" style="font-size:0.85rem; margin-bottom:1rem;">
+            🔒 Bu bir demo ödeme sayfasıdır. Gerçek ücret tahsil edilmez. Üretimde iyzico altyapısı kullanılacaktır.
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg">₺${apt.price} Öde</button>
+        </form>
+        <aside class="card">
+          <h4 class="mb-md">Sipariş Özeti</h4>
+          <div class="pay-summary">
+            <div class="flex-between"><span>Mentör</span><strong>${apt.mentorName}</strong></div>
+            <div class="flex-between"><span>Tarih</span><span>${dtStr}</span></div>
+            <div class="flex-between"><span>Saat</span><span>${apt.time}</span></div>
+            <div class="flex-between"><span>Tip</span><span>${apt.type === 'online' ? '🖥️ Online' : '🤝 Yüz yüze'}</span></div>
+            <hr>
+            <div class="flex-between"><span>Seans ücreti</span><span>₺${apt.price}</span></div>
+            <div class="flex-between" style="font-size:1.25rem; margin-top:0.5rem;">
+              <strong>Toplam</strong><strong style="color:var(--c-primary);">₺${apt.price}</strong>
+            </div>
+          </div>
+          <ul class="booking-meta" style="margin-top:1rem;">
+            <li>✅ ${apt.type === 'online' ? 'Meet linki ödeme sonrası otomatik' : 'Adres bilgisi mentör tarafından paylaşılacak'}</li>
+            <li>✅ 24 saat öncesine kadar ücretsiz iptal</li>
+          </ul>
+        </aside>
+      </div>`;
+
+    host.querySelector('[data-pay-form]').addEventListener('submit', e => {
+      e.preventDefault();
+      App.payForAppointment(id);
+      App.toast('Ödeme başarılı! Seans kesinleşti.', 'success');
+      setTimeout(() => window.location.href = 'dashboard.html', 900);
+    });
   };
 
   App.initBecomeMentorPage = function () {

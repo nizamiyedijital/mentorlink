@@ -13,9 +13,11 @@
 
 Hiçbir kurulum veya sunucu gerekmez. `index.html` dosyasına çift tıkla — tarayıcıda açılır.
 
-## Demo Hesap
+## Demo Hesaplar
 
 - **Admin**: `admin@demo` / `admin`
+- **Mentör**: `mentor@demo` / `mentor` (Docplanner tarzı panel — takvim, kazanç, müsaitlik)
+- **Danışan**: `client@demo` / `client` (hazır randevular ile)
 
 Verileri sıfırlamak için tarayıcı konsolunda: `localStorage.clear()`
 

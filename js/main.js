@@ -16,5 +16,6 @@
     case 'pricing':       App.initPricingPage && App.initPricingPage(); break;
     case 'dashboard':     App.initDashboardPage && App.initDashboardPage(); break;
     case 'become-mentor': App.initBecomeMentorPage && App.initBecomeMentorPage(); break;
+    case 'payment':       App.initPaymentPage && App.initPaymentPage(); break;
   }
 })(window.App);
