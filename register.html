@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kayıt Ol — MentorLink</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/pages.css">
+</head>
+<body data-page="register">
+<div data-navbar></div>
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>Hemen katıl 🚀</h2>
+    <p class="auth-sub">Ücretsiz hesabını oluştur, mentörlük yolculuğuna başla.</p>
+    <form data-register-form>
+      <div class="form-group">
+        <label>Ad Soyad</label>
+        <input type="text" name="name" class="form-input" required>
+      </div>
+      <div class="form-group">
+        <label>E-posta</label>
+        <input type="email" name="email" class="form-input" required>
+      </div>
+      <div class="form-group">
+        <label>Şifre</label>
+        <input type="password" name="password" class="form-input" required minlength="4">
+        <div class="form-hint">En az 4 karakter.</div>
+      </div>
+      <div class="form-group">
+        <label>Hesap Tipi</label>
+        <div class="radio-group">
+          <label class="radio-option">
+            <input type="radio" name="role" value="client" checked>
+            <span>🎯 Danışan (mentör arıyorum)</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="role" value="mentor_candidate">
+            <span>🧑‍🏫 Mentör Adayı</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-error hidden" data-error></div>
+      <button type="submit" class="btn btn-primary btn-block btn-lg">Hesap Oluştur</button>
+    </form>
+    <div class="auth-alt">
+      Zaten hesabın var mı? <a href="login.html">Giriş yap</a>
+    </div>
+  </div>
+</div>
+
+<script src="data/seed.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/components.js"></script>
+<script src="js/mentors.js"></script>
+<script src="js/appointments.js"></script>
+<script src="js/training.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/pages.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

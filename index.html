@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MentorLink — Mentörlükle Büyü</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/pages.css">
+</head>
+<body data-page="home">
+<div data-navbar></div>
+
+<section class="hero">
+  <div class="container hero-inner">
+    <div>
+      <span class="badge badge-primary mb-sm" style="display:inline-block;">🎯 5000+ başarılı mentörlük</span>
+      <h1>Kariyerinin bir sonraki adımını<br><span class="text-gradient">doğru mentörle</span> at.</h1>
+      <p class="hero-lead">Öğrenciler ve profesyoneller için kariyer, akademik, girişimcilik ve kişisel gelişim alanlarında uzman mentörlerle birebir seanslar. Online veya yüz yüze, sana uygun şekilde.</p>
+      <div class="hero-ctas">
+        <a href="mentors.html" class="btn btn-primary btn-lg">Mentör Keşfet</a>
+        <a href="become-mentor.html" class="btn btn-outline btn-lg">Mentör Ol</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>250+</strong><span>Uzman Mentör</span></div>
+        <div class="hero-stat"><strong>12.000+</strong><span>Tamamlanan Seans</span></div>
+        <div class="hero-stat"><strong>4.9★</strong><span>Ortalama Puan</span></div>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true"></div>
+  </div>
+</section>
+
+<section class="section container">
+  <div class="section-head">
+    <div class="eyebrow">Kategoriler</div>
+    <h2>Hangi alanda yol almak istiyorsun?</h2>
+    <p>Hedefine uygun alanı seç, o alandaki mentörleri hemen gör.</p>
+  </div>
+  <div class="category-grid">
+    <a href="mentors.html?category=kariyer" class="category-tile">
+      <div class="category-icon">💼</div><h3>Kariyer & İş</h3>
+      <p>CV, mülakat, terfi, kariyer değişimi</p>
+    </a>
+    <a href="mentors.html?category=akademik" class="category-tile">
+      <div class="category-icon">🎓</div><h3>Akademik</h3>
+      <p>Sınavlar, yurtdışı, tez, burs</p>
+    </a>
+    <a href="mentors.html?category=girisim" class="category-tile">
+      <div class="category-icon">🚀</div><h3>Girişimcilik</h3>
+      <p>Startup, ürün, pazarlama, yatırım</p>
+    </a>
+    <a href="mentors.html?category=kisisel" class="category-tile">
+      <div class="category-icon">🌱</div><h3>Kişisel Gelişim</h3>
+      <p>Motivasyon, zaman, iletişim</p>
+    </a>
+  </div>
+</section>
+
+<section class="section" style="background: var(--c-surface-alt);">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Nasıl Çalışır</div>
+      <h2>3 basit adımda başla</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step"><h3>Üye Ol</h3><p class="text-muted">Ücretsiz kayıt ol, sana uygun üyelik paketini seç.</p></div>
+      <div class="step"><h3>Mentörünü Seç</h3><p class="text-muted">Kategori, fiyat ve puanlara göre filtrele.</p></div>
+      <div class="step"><h3>Seansı Başlat</h3><p class="text-muted">Online (Zoom/Meet) veya yüz yüze randevu al.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section container">
+  <div class="section-head">
+    <div class="eyebrow">Öne Çıkan Mentörler</div>
+    <h2>En çok tercih edilen uzmanlar</h2>
+  </div>
+  <div class="grid grid-4" data-featured-mentors></div>
+  <div class="text-center" style="margin-top: 2rem;">
+    <a href="mentors.html" class="btn btn-outline">Tüm Mentörleri Gör →</a>
+  </div>
+</section>
+
+<section class="section" style="background: var(--c-gradient); color: #fff; border-radius: var(--radius-lg); margin: 0 var(--space-md);">
+  <div class="container text-center">
+    <h2 style="color:#fff;">Bilgini paylaş, mentör ol</h2>
+    <p style="opacity: 0.95; max-width: 600px; margin: 1rem auto 2rem;">
+      Platform içi eğitim ve sınavdan sonra sen de uzman olduğun alanda mentör olarak yer alabilir, gelir elde edebilirsin.
+    </p>
+    <a href="become-mentor.html" class="btn btn-lg" style="background: #fff; color: var(--c-primary);">Mentör Olmaya Başla</a>
+  </div>
+</section>
+
+<div data-footer></div>
+
+<script src="data/seed.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/components.js"></script>
+<script src="js/mentors.js"></script>
+<script src="js/appointments.js"></script>
+<script src="js/training.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/pages.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

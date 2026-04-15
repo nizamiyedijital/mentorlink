@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentörler — MentorLink</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/pages.css">
+</head>
+<body data-page="mentors">
+<div data-navbar></div>
+
+<div class="page-header container">
+  <h1>Mentörleri Keşfet</h1>
+  <p>Uzmanlık alanına, fiyat ve puanlara göre mentörünü bul.</p>
+</div>
+
+<main class="container" style="padding-bottom: var(--space-3xl);">
+  <div class="filter-chips">
+    <button class="filter-chip" data-category-chip="all">Tümü</button>
+    <button class="filter-chip" data-category-chip="kariyer">💼 Kariyer & İş</button>
+    <button class="filter-chip" data-category-chip="akademik">🎓 Akademik</button>
+    <button class="filter-chip" data-category-chip="girisim">🚀 Girişimcilik</button>
+    <button class="filter-chip" data-category-chip="kisisel">🌱 Kişisel Gelişim</button>
+  </div>
+
+  <div class="filter-bar">
+    <div class="form-group" style="margin:0;">
+      <label>Ara</label>
+      <input type="search" class="form-input" placeholder="İsim, başlık veya uzmanlık…" data-search>
+    </div>
+    <div class="form-group" style="margin:0;">
+      <label>Sırala</label>
+      <select class="form-select" data-sort>
+        <option value="rating">En Yüksek Puan</option>
+        <option value="sessions">En Çok Seans</option>
+        <option value="price_asc">Fiyat: Düşükten Yükseğe</option>
+        <option value="price_desc">Fiyat: Yüksekten Düşüğe</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="grid grid-3" data-mentors-grid></div>
+</main>
+
+<div data-footer></div>
+
+<script src="data/seed.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/components.js"></script>
+<script src="js/mentors.js"></script>
+<script src="js/appointments.js"></script>
+<script src="js/training.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/pages.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Üyelik Paketleri — MentorLink</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/pages.css">
+</head>
+<body data-page="pricing">
+<div data-navbar></div>
+
+<div class="page-header container">
+  <h1>Sana uygun paketi seç</h1>
+  <p>Tüm paketler mentör erişimi, randevu alma ve yeniden planlama hakkını içerir.</p>
+</div>
+
+<main class="container" style="padding-bottom: var(--space-3xl);">
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <span class="badge">Aylık</span>
+      <div class="pricing-price">₺799<span>/ay</span></div>
+      <p class="text-muted">Kısa vadeli hedefler için esnek başlangıç.</p>
+      <ul class="pricing-features">
+        <li>Ayda 2 mentör seansı</li>
+        <li>Tüm kategorilerde mentör erişimi</li>
+        <li>Online + yüz yüze seçenek</li>
+        <li>24 saat öncesine kadar iptal</li>
+      </ul>
+      <button class="btn btn-outline btn-block" data-plan="monthly">Paketi Seç</button>
+    </div>
+    <div class="pricing-card featured">
+      <span class="badge badge-primary">3 Aylık</span>
+      <div class="pricing-price">₺1.999<span>/3 ay</span></div>
+      <p class="text-muted">Tutarlı gelişim için en dengeli seçim.</p>
+      <ul class="pricing-features">
+        <li>Ayda 4 mentör seansı</li>
+        <li>Öncelikli randevu hakkı</li>
+        <li>Grup atölyelerine katılım</li>
+        <li>Kişisel gelişim planı</li>
+      </ul>
+      <button class="btn btn-primary btn-block" data-plan="quarterly">Paketi Seç</button>
+    </div>
+    <div class="pricing-card">
+      <span class="badge">Yıllık</span>
+      <div class="pricing-price">₺6.999<span>/yıl</span></div>
+      <p class="text-muted">En yüksek tasarruf, sınırsız destek.</p>
+      <ul class="pricing-features">
+        <li>Sınırsız mentör seansı</li>
+        <li>1-1 kariyer danışmanlığı</li>
+        <li>Tüm premium içerikler</li>
+        <li>Yıllık gelişim raporu</li>
+      </ul>
+      <button class="btn btn-outline btn-block" data-plan="yearly">Paketi Seç</button>
+    </div>
+  </div>
+
+  <p class="text-center text-muted" style="margin-top: var(--space-xl); font-size: 0.9rem;">
+    * Bu demo uygulamada ödeme entegrasyonu simüle edilmiştir. Gerçek bir ödeme alınmaz.
+  </p>
+</main>
+
+<div data-footer></div>
+
+<script src="data/seed.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/components.js"></script>
+<script src="js/mentors.js"></script>
+<script src="js/appointments.js"></script>
+<script src="js/training.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/pages.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
