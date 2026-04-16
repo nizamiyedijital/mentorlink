@@ -735,3 +735,35 @@
 .card-icon { font-size:2rem; }
 
 .file-upload-area { padding:1.5rem; border:2px dashed var(--c-border,#ddd); border-radius:10px; text-align:center; background:var(--c-bg); }
+
+/* === Admin Layout === */
+.admin-layout { display:grid; grid-template-columns:260px 1fr; gap:2rem; align-items:start; }
+@media (max-width: 768px) { .admin-layout { grid-template-columns:1fr; } }
+.admin-brand { padding:1rem; font-weight:800; font-size:1.2rem; display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem; }
+
+/* === Progress Bar === */
+.progress-bar { width:100%; height:12px; background:var(--c-bg); border-radius:999px; overflow:hidden; }
+.progress-fill { height:100%; background:var(--c-gradient); border-radius:999px; transition:width .4s ease; min-width:4px; }
+
+/* === Mini Metrics === */
+.mini-metric { display:flex; align-items:center; gap:0.75rem; padding:1rem !important; }
+.mini-metric-icon { font-size:1.5rem; }
+.mini-metric-value { font-size:1.3rem; font-weight:800; }
+
+/* === Rating Bars === */
+.rating-bar-row { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.35rem; font-size:0.85rem; }
+.rating-bar { flex:1; height:8px; background:var(--c-bg); border-radius:999px; overflow:hidden; }
+.rating-bar-fill { height:100%; background:var(--c-gradient); border-radius:999px; }
+
+/* === Review Item === */
+.review-item { padding:1rem 1.25rem; border-bottom:1px solid var(--c-border,#f0f0f0); }
+.review-item:last-child { border-bottom:none; }
+
+/* === Star Picker === */
+.star-picker { display:flex; gap:0.25rem; font-size:1.5rem; margin-bottom:1rem; }
+.star-btn { cursor:pointer; opacity:0.3; transition:opacity .15s; }
+.star-btn.active { opacity:1; }
+
+/* === Client Grid === */
+.client-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:1rem; }
+.client-card { border-left:4px solid var(--c-primary); }
