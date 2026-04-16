@@ -695,3 +695,43 @@
 /* === Badges === */
 .badge-info { background:#3498db; color:white; }
 .badge-warning { background:#f39c12; color:white; }
+
+/* === Settings Page === */
+.settings-layout { display:grid; grid-template-columns:260px 1fr; gap:2rem; align-items:start; }
+@media (max-width: 768px) { .settings-layout { grid-template-columns:1fr; } }
+
+.settings-nav { display:flex; flex-direction:column; gap:4px; background:white; border-radius:var(--radius); padding:0.5rem; box-shadow:var(--shadow); position:sticky; top:1rem; }
+.settings-nav-item { padding:0.75rem 1rem; border-radius:8px; color:var(--c-text); text-decoration:none; font-weight:500; display:flex; align-items:center; gap:0.75rem; transition:all .15s; }
+.settings-nav-item:hover { background:var(--c-bg); }
+.settings-nav-item.active { background:var(--c-gradient); color:white; }
+.settings-nav-icon { font-size:1.1rem; width:1.5rem; text-align:center; }
+
+.settings-section { margin-bottom:1.5rem; }
+.settings-section h2 { margin-bottom:0.25rem; }
+
+.settings-avatar-row { display:flex; align-items:center; gap:1.5rem; }
+.settings-avatar { width:80px; height:80px; border-radius:50%; overflow:hidden; border:3px solid var(--c-primary); flex-shrink:0; }
+.settings-avatar img { width:100%; height:100%; object-fit:cover; }
+
+.settings-toggle { display:flex; justify-content:space-between; align-items:center; padding:0.85rem 0; border-bottom:1px solid var(--c-border,#f0f0f0); }
+.settings-toggle:last-of-type { border-bottom:none; }
+
+.switch { position:relative; display:inline-block; width:48px; height:26px; flex-shrink:0; }
+.switch input { opacity:0; width:0; height:0; }
+.switch-slider { position:absolute; cursor:pointer; inset:0; background:#ccc; border-radius:26px; transition:.2s; }
+.switch-slider::before { content:''; position:absolute; width:20px; height:20px; left:3px; bottom:3px; background:white; border-radius:50%; transition:.2s; }
+.switch input:checked + .switch-slider { background:var(--c-primary); }
+.switch input:checked + .switch-slider::before { transform:translateX(22px); }
+
+.settings-actions { margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--c-border,#eee); display:flex; justify-content:flex-end; gap:0.75rem; }
+
+.interest-chips { display:flex; gap:0.5rem; flex-wrap:wrap; }
+.chip-toggle { cursor:pointer; padding:0.5rem 1rem; border:2px solid var(--c-border,#eee); border-radius:999px; font-size:0.9rem; transition:all .15s; }
+.chip-toggle input { display:none; }
+.chip-toggle:hover { border-color:var(--c-primary); }
+.chip-toggle.active { border-color:var(--c-primary); background:var(--c-primary); color:white; }
+
+.saved-card { display:flex; align-items:center; gap:1rem; padding:1rem; background:var(--c-bg); border-radius:10px; }
+.card-icon { font-size:2rem; }
+
+.file-upload-area { padding:1.5rem; border:2px dashed var(--c-border,#ddd); border-radius:10px; text-align:center; background:var(--c-bg); }

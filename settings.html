@@ -3,18 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mentör Profili — MentorLink</title>
+<title>Ayarlar — MentorLink</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
 <link rel="stylesheet" href="css/pages.css">
 </head>
-<body data-page="mentor-detail">
+<body data-page="settings">
 <div data-navbar></div>
-<main class="container" style="padding: var(--space-xl) 0 var(--space-3xl);">
-  <a href="mentors.html" class="btn btn-ghost btn-sm mb-md">← Tüm Mentörler</a>
-  <div data-mentor-detail></div>
+
+<header class="dash-header">
+  <div class="container">
+    <h1>Ayarlar</h1>
+    <p>Hesap ve tercihlerini yönet.</p>
+  </div>
+</header>
+
+<main class="container" style="padding-bottom: var(--space-3xl);">
+  <div class="settings-layout">
+    <aside class="settings-sidebar" data-settings-nav></aside>
+    <section class="settings-content" data-settings-content></section>
+  </div>
 </main>
+
 <div data-footer></div>
 
 <script src="data/seed.js"></script>

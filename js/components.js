@@ -9,6 +9,7 @@
     const authSection = user ? `
       ${user.role === 'admin' ? `<a href="admin.html" class="btn btn-ghost btn-sm">Admin</a>` : ''}
       ${user.role !== 'admin' ? `<a href="${user.role === 'mentor_candidate' ? 'become-mentor.html' : 'dashboard.html'}" class="btn btn-ghost btn-sm">${user.name}</a>` : ''}
+      ${user.role !== 'admin' ? `<a href="settings.html" class="btn btn-ghost btn-sm" title="Ayarlar">⚙️</a>` : ''}
       <button class="btn btn-outline btn-sm" data-logout>Çıkış</button>
     ` : `
       <a href="login.html" class="btn btn-ghost btn-sm">Giriş</a>
