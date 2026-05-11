@@ -16,7 +16,7 @@ window.App = window.App || {};
     GENERAL_REVIEWS: 'mp_general_reviews',
     SESSION_NOTES: 'mp_session_notes_v2',
     WELFARE_RATINGS: 'mp_welfare_ratings',
-    SEEDED: 'mp_seeded_v4'
+    SEEDED: 'mp_seeded_v6'
   };
 
   App.COMMISSION_RATE = 0.20;
@@ -186,6 +186,29 @@ window.App = window.App || {};
     addApt({ mentorId:'m3', clientId:'u_c4', when: offset(-8, 14), status:'completed', type:'online', rating:5 });
     addApt({ mentorId:'m3', clientId:'u_c3', when: offset(3, 11), status:'paid', type:'online' });
     addApt({ mentorId:'m3', clientId:'u_c2', when: offset(6, 15), status:'approved', type:'online' });
+
+    // === Refah rozeti vitrin demosu ===
+    // Mert (u_c1) → 🏆 Refah Ustası (120+ puan): 25 ek seans × ~4.6 avg = ~115 puan → +17 = ~132
+    const mertExtra = [-260,-255,-250,-245,-240,-235,-230,-225,-220,-215,-210,-205,-200,-195,-190,-185,-180,-175,-170,-165,-160,-155,-150,-145,-140];
+    mertExtra.forEach((d, i) => {
+      addApt({ mentorId:['m1','m2','m3'][i % 3], clientId:'u_c1', when: offset(d, 10 + (i%6)), status:'completed', type: i%4===0?'offline':'online' });
+    });
+    // Zeynep (u_c2) → 🌿 Gelişen Birey (50+): 11 ek seans → ~50 puan → +mevcut = ~63
+    [-200,-190,-180,-170,-160,-150,-140,-130,-120,-110,-100].forEach((d, i) => {
+      addApt({ mentorId:['m1','m3'][i % 2], clientId:'u_c2', when: offset(d, 11 + (i%5)), status:'completed', type:'online' });
+    });
+    // Selin (u_c4) → 🌱 Yolculuk Başlıyor (20+): 5 ek seans → ~23 puan → +mevcut = ~30+
+    [-150,-130,-110,-90,-70].forEach((d, i) => {
+      addApt({ mentorId:['m1','m2','m3'][i % 3], clientId:'u_c4', when: offset(d, 13), status:'completed', type:'online' });
+    });
+    // Can (u_c3) → 🌱 Yolculuk Başlıyor (20+): 3 ek seans
+    [-200,-130,-80].forEach((d, i) => {
+      addApt({ mentorId:['m2','m1','m3'][i], clientId:'u_c3', when: offset(d, 12), status:'completed', type:'online' });
+    });
+    // Ahmet (m2) → 🧭 Yol Gösterici (100+): 10 ek seans → +~45 puan
+    [-185,-170,-155,-140,-125,-110,-95,-80,-65,-50].forEach((d, i) => {
+      addApt({ mentorId:'m2', clientId:['u_c3','u_c4','u_c2','u_c1'][i % 4], when: offset(d, 12 + (i%5)), status:'completed', type:'online' });
+    });
 
     App.Storage.set(KEYS.APPOINTMENTS, appointments);
     App.Storage.set(KEYS.PAYMENTS, payments);

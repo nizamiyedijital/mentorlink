@@ -23,7 +23,15 @@
       "mcp__plugin_playwright_playwright__browser_console_messages",
       "mcp__plugin_playwright_playwright__browser_evaluate",
       "mcp__plugin_playwright_playwright__browser_take_screenshot",
-      "mcp__plugin_playwright_playwright__browser_close"
+      "mcp__plugin_playwright_playwright__browser_close",
+      "Bash(gh api *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://nizamiyedijital.github.io/mentorlink/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://nizamiyedijital.github.io/mentorlink/index.html)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://nizamiyedijital.github.io/mentorlink/js/welfare.js)",
+      "Bash(curl -s https://api.github.com/repos/nizamiyedijital/mentorlink/pages/builds/latest)",
+      "Bash(curl -sI https://nizamiyedijital.github.io/mentorlink/js/welfare.js)",
+      "Bash(curl -s -o /dev/null -w \"raw welfare.js: %{http_code}\\\\n\" https://raw.githubusercontent.com/nizamiyedijital/mentorlink/main/js/welfare.js)",
+      "Bash(curl -s http://localhost:8765/js/storage.js)"
     ]
   }
 }
