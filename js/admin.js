@@ -544,6 +544,7 @@
     // ===== PLATFORM SETTINGS =====
     function renderPlatform() {
       const ps = App.Storage.get('mp_platform_settings', {});
+      const bcfg = App.getBadgeConfig();
       content.innerHTML = `
         <h2 class="mb-lg">Platform Ayarları</h2>
         <form class="card mb-lg" data-ps-form>
@@ -572,6 +573,40 @@
           </div>
           <div class="settings-actions"><button type="submit" class="btn btn-primary">Kaydet</button></div>
         </form>
+
+        <form class="card mb-lg" data-badge-form>
+          <div class="flex-between mb-md" style="flex-wrap:wrap; gap:0.5rem;">
+            <h3 style="margin:0;">🌿 Refah & Rozet Ayarları</h3>
+            <button type="button" class="btn btn-ghost btn-sm" data-reset-badges>Varsayılana Sıfırla</button>
+          </div>
+          <p class="text-muted mb-md" style="font-size:0.9rem;">Mentörlerin yazdığı kazanım özetinin minimum uzunluğunu, danışanın bir seansta verebileceği maksimum refah puanını ve rozet eşiklerini buradan ayarlayabilirsin.</p>
+          <div class="grid grid-2" style="gap:1rem;">
+            <div class="form-group"><label>Min. Kazanım Özeti Uzunluğu (karakter)</label>
+              <input type="number" class="form-input" name="minNoteLength" min="50" max="2000" value="${bcfg.minNoteLength}"></div>
+            <div class="form-group"><label>Max. Refah Puanı (1 seans)</label>
+              <input type="number" class="form-input" name="welfareMax" min="3" max="10" value="${bcfg.welfareMax}"></div>
+          </div>
+          <h4 class="mb-sm" style="margin-top:1rem;">Danışan Rozetleri</h4>
+          <div data-client-badges>
+            ${bcfg.clientBadges.map((b, i) => `
+              <div class="badge-row">
+                <input type="text" class="form-input" data-cb-icon="${i}" value="${b.icon}" maxlength="2" style="width:60px; text-align:center;">
+                <input type="text" class="form-input" data-cb-name="${i}" value="${b.name}" placeholder="Rozet adı" style="flex:1;">
+                <input type="number" class="form-input" data-cb-thr="${i}" value="${b.threshold}" min="1" placeholder="Eşik" style="width:100px;">
+              </div>`).join('')}
+          </div>
+          <h4 class="mb-sm" style="margin-top:1rem;">Mentör Rozetleri</h4>
+          <div data-mentor-badges>
+            ${bcfg.mentorBadges.map((b, i) => `
+              <div class="badge-row">
+                <input type="text" class="form-input" data-mb-icon="${i}" value="${b.icon}" maxlength="2" style="width:60px; text-align:center;">
+                <input type="text" class="form-input" data-mb-name="${i}" value="${b.name}" placeholder="Rozet adı" style="flex:1;">
+                <input type="number" class="form-input" data-mb-thr="${i}" value="${b.threshold}" min="1" placeholder="Eşik" style="width:100px;">
+              </div>`).join('')}
+          </div>
+          <div class="settings-actions"><button type="submit" class="btn btn-primary">Refah Ayarlarını Kaydet</button></div>
+        </form>
+
         <div class="card" style="border:2px solid var(--c-danger,#e74c3c);">
           <h3 class="mb-md" style="color:var(--c-danger,#e74c3c);">Bakım Modu</h3>
           <p class="text-muted mb-md">Platform bakım moduna alınırsa yeni kullanıcılar kayıt olamaz ve randevu oluşturulamaz.</p>
@@ -597,6 +632,36 @@
           monthlyPrice: parseInt(fd.get('monthly')), quarterlyPrice: parseInt(fd.get('quarterly')), yearlyPrice: parseInt(fd.get('yearly'))
         });
         App.toast('Abonelik fiyatları güncellendi.', 'success');
+      });
+      content.querySelector('[data-badge-form]').addEventListener('submit', e => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const cur = App.getBadgeConfig();
+        const collectBadges = (prefix, count) => {
+          const out = [];
+          for (let i = 0; i < count; i++) {
+            const icon = content.querySelector(`[data-${prefix}-icon="${i}"]`).value.trim() || '🎖️';
+            const name = content.querySelector(`[data-${prefix}-name="${i}"]`).value.trim() || `Rozet ${i+1}`;
+            const threshold = parseInt(content.querySelector(`[data-${prefix}-thr="${i}"]`).value) || 0;
+            out.push({ threshold, name, icon });
+          }
+          return out.sort((a,b) => a.threshold - b.threshold);
+        };
+        const next = {
+          minNoteLength: Math.max(50, parseInt(fd.get('minNoteLength')) || 200),
+          welfareMax: Math.min(10, Math.max(3, parseInt(fd.get('welfareMax')) || 5)),
+          clientBadges: collectBadges('cb', cur.clientBadges.length),
+          mentorBadges: collectBadges('mb', cur.mentorBadges.length)
+        };
+        App.Storage.set('mp_badge_config', next);
+        App.toast('Refah ayarları kaydedildi.', 'success');
+        renderPlatform();
+      });
+      content.querySelector('[data-reset-badges]').addEventListener('click', () => {
+        if (!confirm('Refah & rozet ayarları varsayılana sıfırlansın mı?')) return;
+        App.Storage.remove('mp_badge_config');
+        App.toast('Varsayılanlara sıfırlandı.', 'success');
+        renderPlatform();
       });
       content.querySelector('[data-maintenance]').addEventListener('click', () => {
         const cur = App.Storage.get('mp_platform_settings', {});

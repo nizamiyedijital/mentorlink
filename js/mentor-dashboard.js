@@ -130,6 +130,14 @@
             <div class="stat-value">⭐ ${avgRating}</div>
             <div class="stat-sub">${reviews.length} yorum</div>
           </div>
+          ${(() => {
+            const mw = App.getMentorWelfare(mentorId);
+            return `<div class="stat-card" style="border-left:4px solid var(--c-primary);">
+              <div class="stat-label">Refah Puanı</div>
+              <div class="stat-value">🌿 ${mw.total}</div>
+              <div class="stat-sub">${mw.count} seans • ${App.renderBadges(mw.badges,'sm')}</div>
+            </div>`;
+          })()}
         </div>
 
         <div class="grid grid-3" style="margin-top:1.5rem; gap:1rem;">
@@ -280,18 +288,27 @@
       content.querySelectorAll('[data-cancel]').forEach(b => b.addEventListener('click', () => {
         if(confirm('İptal et?')){App.cancelAppointment(b.dataset.cancel);renderTab();}
       }));
+      content.querySelectorAll('[data-write-note],[data-edit-note]').forEach(b => b.addEventListener('click', () => {
+        const aptId = b.dataset.writeNote || b.dataset.editNote;
+        const allApts = App.Storage.get(App.Storage.keys.APPOINTMENTS, []);
+        const apt = allApts.find(x => x.id === aptId);
+        if (apt) App.openSessionNoteModal(apt, () => renderTab());
+      }));
     }
 
     function aptRow(a) {
       const st = App.STATUS_LABEL[a.status];
       const isPaid = a.status === 'paid';
       const pastTime = new Date(a.date+'T'+a.time).getTime() < Date.now();
+      const hasNote = a.status === 'completed' && App.getSessionNote(a.id);
+      const needsNote = a.status === 'completed' && !hasNote;
       return `
         <div class="request-row">
           <div>
             <div class="flex" style="gap:0.5rem; align-items:center;">
               <strong>${a.clientName}</strong>
               <span class="badge ${st.cls}">${st.label}</span>
+              ${hasNote ? '<span class="badge badge-success" style="font-size:0.7rem;">📝 Özet yazıldı</span>' : ''}
             </div>
             <div class="text-muted" style="font-size:0.9rem; margin-top:0.25rem;">
               ${new Date(a.date+'T'+a.time).toLocaleDateString('tr-TR',{weekday:'long',day:'numeric',month:'long'})} • ${a.time} • ${a.type==='online'?'🖥️':'🤝'}
@@ -301,6 +318,8 @@
             ${isPaid && a.meetLink ? `<a href="${a.meetLink}" target="_blank" class="btn btn-sm btn-primary">Katıl</a>` : ''}
             ${isPaid && pastTime ? `<button class="btn btn-sm btn-primary" data-complete="${a.id}">Tamamlandı</button>
               <button class="btn btn-sm btn-ghost" data-noshow="${a.id}">Gelmedi</button>` : ''}
+            ${needsNote ? `<button class="btn btn-sm btn-primary" data-write-note="${a.id}">📝 Kazanım Özeti Yaz</button>` : ''}
+            ${hasNote ? `<button class="btn btn-sm btn-ghost" data-edit-note="${a.id}">📝 Düzenle</button>` : ''}
             ${['requested','approved','paid'].includes(a.status)&&!pastTime ? `<button class="btn btn-sm btn-ghost" data-cancel="${a.id}">İptal</button>` : ''}
           </div>
         </div>`;
@@ -383,23 +402,41 @@
       const dist = [5,4,3,2,1].map(n => ({ star: n, count: reviews.filter(r => r.rating === n).length }));
       const maxDist = Math.max(1, ...dist.map(d => d.count));
 
+      const mw = App.getMentorWelfare(mentorId);
+      const cfg = App.getBadgeConfig();
+      const gr = App.getMentorGeneralRating(mentorId);
+
       content.innerHTML = `
         <h2 class="mb-lg">Yorumlar & Değerlendirmeler</h2>
-        <div class="grid grid-2" style="gap:1.5rem; margin-bottom:1.5rem;">
+        <div class="grid grid-3" style="gap:1.5rem; margin-bottom:1.5rem;">
           <div class="card" style="text-align:center;">
             <div style="font-size:3rem; font-weight:800; line-height:1;">${avgRating}</div>
             <div style="font-size:1.5rem; margin:0.5rem 0;">${'⭐'.repeat(Math.round(parseFloat(avgRating)||0))}</div>
-            <p class="text-muted">${reviews.length} değerlendirme</p>
+            <p class="text-muted">${reviews.length} seans değerlendirmesi</p>
           </div>
-          <div class="card">
-            <h4 class="mb-md">Dağılım</h4>
-            ${dist.map(d => `
-              <div class="rating-bar-row">
-                <span>${d.star} ⭐</span>
-                <div class="rating-bar"><div class="rating-bar-fill" style="width:${(d.count/maxDist)*100}%;"></div></div>
-                <span>${d.count}</span>
-              </div>`).join('')}
+          <div class="card" style="text-align:center;">
+            <div style="font-size:3rem; font-weight:800; line-height:1; color:var(--c-primary);">🌿 ${mw.total}</div>
+            <p class="text-muted" style="margin-top:0.5rem;">${mw.count} seans refah puanı</p>
+            <div style="margin-top:0.5rem;">${App.renderBadges(mw.badges, 'lg')}</div>
+            ${(() => {
+              const next = cfg.mentorBadges.find(b => b.threshold > mw.total);
+              return next ? App.renderWelfareBar(mw.total, next.threshold, 'Sonraki: ' + next.icon + ' ' + next.name) : '';
+            })()}
           </div>
+          <div class="card" style="text-align:center;">
+            <div style="font-size:3rem; font-weight:800; line-height:1;">${gr.avg || '—'}</div>
+            <div style="font-size:1.3rem; margin:0.5rem 0;">${gr.avg ? '⭐'.repeat(Math.round(gr.avg)) : ''}</div>
+            <p class="text-muted">${gr.count} genel değerlendirme</p>
+          </div>
+        </div>
+        <div class="card mb-lg">
+          <h4 class="mb-md">Yıldız Dağılımı</h4>
+          ${dist.map(d => `
+            <div class="rating-bar-row">
+              <span>${d.star} ⭐</span>
+              <div class="rating-bar"><div class="rating-bar-fill" style="width:${(d.count/maxDist)*100}%;"></div></div>
+              <span>${d.count}</span>
+            </div>`).join('')}
         </div>
         ${reviews.length === 0 ? '<p class="text-muted">Henüz yorum yok.</p>' : `
         <div class="card" style="padding:0;">

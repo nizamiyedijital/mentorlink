@@ -197,6 +197,36 @@
           <div class="progress-bar"><div class="progress-fill" style="width:${goalPct}%;"></div></div>
         </div>
 
+        ${(() => {
+          const cw = App.getClientWelfare(user.id);
+          const cfg = App.getBadgeConfig();
+          const nextBadge = cfg.clientBadges.find(b => b.threshold > cw.total);
+          const currentBadge = cw.badges.length ? cw.badges[cw.badges.length-1] : null;
+          return `
+          <div class="card welfare-card" style="margin-top:1.5rem;">
+            <div class="welfare-card-head">
+              <div>
+                <h4 style="margin:0;">🌿 Refah Yolculuğun</h4>
+                <p class="text-muted" style="font-size:0.85rem; margin-top:0.25rem;">Her seansın katkısı puana dönüşür, rozetler kazanırsın.</p>
+              </div>
+              <div class="welfare-total">${cw.total}<span>puan</span></div>
+            </div>
+            <div class="welfare-badge-row">
+              ${cfg.clientBadges.map(b => {
+                const earned = cw.total >= b.threshold;
+                return `<div class="welfare-badge-slot ${earned ? 'earned' : ''}" title="${b.name} — ${b.threshold} puan">
+                  <span class="welfare-badge-emoji">${b.icon}</span>
+                  <span class="welfare-badge-name">${b.name}</span>
+                  <span class="welfare-badge-thr">${b.threshold}</span>
+                </div>`;
+              }).join('')}
+            </div>
+            ${currentBadge ? `<p class="text-muted" style="font-size:0.85rem; margin-top:0.75rem;">Mevcut rozet: <strong>${currentBadge.icon} ${currentBadge.name}</strong></p>` : ''}
+            ${nextBadge ? App.renderWelfareBar(cw.total, nextBadge.threshold, 'Sonraki: ' + nextBadge.icon + ' ' + nextBadge.name) :
+              `<p class="text-muted" style="font-size:0.85rem; margin-top:0.5rem;">🎉 Tüm rozetleri topladın!</p>`}
+          </div>`;
+        })()}
+
         ${recommended.length ? `
         <div style="margin-top:1.5rem;">
           <h3 class="mb-md">Senin İçin Önerilen Mentörler</h3>
@@ -242,6 +272,13 @@
       contentEl.querySelectorAll('[data-review]').forEach(btn => {
         btn.addEventListener('click', () => openReviewModal(btn.dataset.review));
       });
+      contentEl.querySelectorAll('[data-welfare-rate]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const aptId = btn.dataset.welfareRate;
+          const apt = App.Storage.get(App.Storage.keys.APPOINTMENTS, []).find(a => a.id === aptId);
+          if (apt) App.openWelfareRatingModal(apt, () => renderContent());
+        });
+      });
     }
 
     function apptHtml(a) {
@@ -251,6 +288,9 @@
       const reviews = App.Storage.get(App.Storage.keys.REVIEWS, []);
       const hasReview = reviews.some(r => r.appointmentId === a.id);
       const needsReview = a.status === 'completed' && !hasReview;
+      const hasNote = a.status === 'completed' && App.getSessionNote(a.id);
+      const hasWelfareRating = a.status === 'completed' && App.getWelfareRating(a.id);
+      const canRateWelfare = hasNote && !hasWelfareRating;
       return `
         <div class="appointment-item">
           <div class="appointment-info">
@@ -263,6 +303,8 @@
             ${a.status==='paid'&&a.meetLink ? `<a href="${a.meetLink}" target="_blank" class="btn btn-sm btn-primary">Katıl</a>` : ''}
             ${needsReview ? `<button class="btn btn-sm btn-primary" data-review="${a.id}">⭐ Değerlendir</button>` : ''}
             ${hasReview ? '<span class="text-muted" style="font-size:0.8rem;">✓ Değerlendirildi</span>' : ''}
+            ${canRateWelfare ? `<button class="btn btn-sm btn-primary welfare-rate-btn" data-welfare-rate="${a.id}">🌿 Refah Değerlendir</button>` : ''}
+            ${hasWelfareRating ? '<span class="text-muted" style="font-size:0.8rem;">🌿 Değerlendirildi</span>' : ''}
             ${canCancel ? `<button class="btn btn-sm btn-ghost" data-cancel="${a.id}">İptal</button>` : ''}
           </div>
         </div>`;

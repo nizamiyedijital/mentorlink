@@ -767,3 +767,57 @@
 /* === Client Grid === */
 .client-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:1rem; }
 .client-card { border-left:4px solid var(--c-primary); }
+
+/* === Welfare System === */
+.welfare-badge {
+  display:inline-flex; align-items:center; justify-content:center;
+  border-radius:999px; background:linear-gradient(135deg,#FFF1E6,#F3E8FF);
+  border:1px solid rgba(123,44,191,0.15);
+}
+.welfare-badge.badge-sm { width:1.6rem; height:1.6rem; font-size:0.9rem; margin-right:2px; }
+.welfare-badge.badge-lg { width:2.5rem; height:2.5rem; font-size:1.4rem; margin:0 0.15rem; }
+
+.welfare-progress { margin-top:0.5rem; }
+.welfare-fill { background:linear-gradient(135deg,#48BB78,#7B2CBF); }
+
+.welfare-picker { display:grid; grid-template-columns:repeat(5,1fr); gap:0.5rem; margin-top:0.5rem; }
+@media (max-width:480px) { .welfare-picker { grid-template-columns:repeat(3,1fr); } }
+.welfare-btn {
+  display:flex; flex-direction:column; align-items:center; gap:0.25rem;
+  padding:0.85rem 0.5rem; border:2px solid var(--c-border,#eee); background:white;
+  border-radius:12px; cursor:pointer; transition:all .15s; font:inherit; color:var(--c-text);
+}
+.welfare-btn:hover { border-color:var(--c-primary); transform:translateY(-2px); }
+.welfare-btn.active { border-color:var(--c-primary); background:linear-gradient(135deg,#FFF1E6,#F3E8FF); }
+.welfare-btn-num { font-size:1.5rem; font-weight:800; color:var(--c-primary); }
+.welfare-btn-label { font-size:0.7rem; color:var(--c-muted); text-transform:uppercase; letter-spacing:0.5px; }
+
+.welfare-rate-btn { background:linear-gradient(135deg,#48BB78,#7B2CBF) !important; color:white !important; border:none !important; }
+
+.star-picker-lg { display:flex; gap:0.35rem; font-size:2.2rem; margin-bottom:1rem; justify-content:center; }
+.star-btn-lg { cursor:pointer; opacity:0.25; transition:all .15s; }
+.star-btn-lg:hover { transform:scale(1.15); }
+.star-btn-lg.active { opacity:1; }
+
+.review-section { margin-top:1rem; }
+
+/* Welfare card on client overview */
+.welfare-card { border:1px solid rgba(123,44,191,0.15); background:linear-gradient(135deg, #FFF8F3, #F8F4FF); }
+.welfare-card-head { display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; margin-bottom:1rem; flex-wrap:wrap; }
+.welfare-total { font-size:2.5rem; font-weight:800; color:var(--c-primary); line-height:1; display:flex; align-items:baseline; gap:0.4rem; }
+.welfare-total span { font-size:0.8rem; color:var(--c-muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+
+.welfare-badge-row { display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:0.5rem; }
+.welfare-badge-slot {
+  display:flex; flex-direction:column; align-items:center; gap:0.25rem;
+  padding:0.85rem 0.5rem; border-radius:12px; background:white;
+  border:2px dashed var(--c-border,#e5e5e5); opacity:0.45; transition:all .2s;
+}
+.welfare-badge-slot.earned { opacity:1; border-style:solid; border-color:var(--c-primary); background:linear-gradient(135deg,#FFF1E6,#F3E8FF); box-shadow:0 4px 12px rgba(123,44,191,0.1); }
+.welfare-badge-emoji { font-size:1.8rem; }
+.welfare-badge-name { font-size:0.8rem; font-weight:600; text-align:center; }
+.welfare-badge-thr { font-size:0.7rem; color:var(--c-muted); }
+
+/* Admin badge rows */
+.badge-row { display:flex; gap:0.5rem; align-items:center; margin-bottom:0.5rem; flex-wrap:wrap; }
+.badge-row .form-input { margin:0; }

@@ -60,12 +60,18 @@
             <li>✅ Online (Meet) veya yüz yüze</li>
           </ul>
         </aside>
-      </div>`;
+      </div>
+      <div data-mentor-reviews style="margin-top:2rem;"></div>`;
 
     renderSlotPicker(m);
     document.querySelector('[data-scroll-slots]')?.addEventListener('click', () => {
       document.querySelector('[data-slot-picker]').scrollIntoView({ behavior: 'smooth' });
     });
+
+    const reviewEl = document.querySelector('[data-mentor-reviews]');
+    if (reviewEl && App.renderMentorReviewSection) {
+      App.renderMentorReviewSection(m.id, reviewEl);
+    }
   };
 
   function renderSlotPicker(mentor) {

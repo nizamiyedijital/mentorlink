@@ -13,10 +13,33 @@ window.App = window.App || {};
     AVAILABILITY: 'mp_availability',
     PAYMENTS: 'mp_payments',
     REVIEWS: 'mp_reviews',
-    SEEDED: 'mp_seeded_v3'
+    GENERAL_REVIEWS: 'mp_general_reviews',
+    SESSION_NOTES: 'mp_session_notes_v2',
+    WELFARE_RATINGS: 'mp_welfare_ratings',
+    SEEDED: 'mp_seeded_v4'
   };
 
   App.COMMISSION_RATE = 0.20;
+
+  App.DEFAULT_BADGE_CONFIG = {
+    clientBadges: [
+      { threshold: 20, name: 'Yolculuk Başlıyor', icon: '🌱' },
+      { threshold: 50, name: 'Gelişen Birey', icon: '🌿' },
+      { threshold: 75, name: 'Kararlı Adımlar', icon: '🌳' },
+      { threshold: 120, name: 'Refah Ustası', icon: '🏆' }
+    ],
+    mentorBadges: [
+      { threshold: 100, name: 'Yol Gösterici', icon: '🧭' },
+      { threshold: 400, name: 'İlham Veren', icon: '💎' },
+      { threshold: 800, name: 'Refah Elçisi', icon: '👑' }
+    ],
+    minNoteLength: 200,
+    welfareMax: 5
+  };
+
+  App.getBadgeConfig = function () {
+    return App.Storage.get('mp_badge_config', App.DEFAULT_BADGE_CONFIG);
+  };
 
   App.Storage = {
     get(key, fallback = null) {
@@ -168,15 +191,53 @@ window.App = window.App || {};
     App.Storage.set(KEYS.PAYMENTS, payments);
     App.Storage.set(KEYS.REVIEWS, reviews);
 
-    // subscriptions — aktif danışanlar
+    // session notes + welfare ratings for completed apts
+    const sessionNotes = [];
+    const welfareRatings = [];
+    const kazanimlar = [
+      'CV\'nizi güçlendirmek için 3 somut aksiyon belirlendi. STAR tekniği ile örnek cümleler oluşturduk.',
+      'Mülakat sürecindeki kaygılarınızı ele aldık. Mock mülakat yaparak güçlü/zayıf yönlerinizi belirledik.',
+      'Kariyer geçişi planı çıkardık. 3 aylık yol haritası ve network stratejisi oluşturduk.',
+      'Liderlik becerilerinizi değerlendirdik. Delegasyon ve geri bildirim teknikleri üzerinde çalıştık.',
+      'İş-yaşam dengesi konusunu ele aldık. Zaman yönetimi çerçevesi ve önceliklendirme matrisi oluşturduk.',
+      'Girişim fikrinizin MVP stratejisini netleştirdik. Müşteri segmentasyonu ve değer önerisi canvas\'ı hazırladık.',
+      'Tez konusu daraltıldı. Araştırma metodolojisi ve kaynak taraması stratejisi belirlendi.',
+      'Kişisel marka oluşturma planı hazırlandı. LinkedIn optimizasyonu ve içerik stratejisi konuşuldu.'
+    ];
+    let wnIdx = 0, wrIdx = 0;
+    appointments.filter(a => a.status === 'completed').forEach((a, i) => {
+      sessionNotes.push({
+        id: `sn_${++wnIdx}`, appointmentId: a.id, mentorId: a.mentorId, clientId: a.clientId,
+        summary: kazanimlar[i % kazanimlar.length],
+        createdAt: new Date(new Date(a.date).getTime() + 2*3600*1000).toISOString()
+      });
+      const score = [4,5,5,4,5,5,4,5][i % 8];
+      welfareRatings.push({
+        id: `wr_${++wrIdx}`, appointmentId: a.id, sessionNoteId: `sn_${wnIdx}`,
+        mentorId: a.mentorId, clientId: a.clientId, score,
+        comment: '',
+        createdAt: new Date(new Date(a.date).getTime() + 4*3600*1000).toISOString()
+      });
+    });
+    App.Storage.set(KEYS.SESSION_NOTES, sessionNotes);
+    App.Storage.set(KEYS.WELFARE_RATINGS, welfareRatings);
+
+    // general reviews (1 per client-mentor pair)
+    const generalReviews = [
+      { id:'gr_1', clientId:'u_c1', mentorId:'m1', rating:5, comment:'Kariyer yolculuğumda dönüm noktası oldu. Kesinlikle tavsiye ederim.', createdAt: offset(-20).toISOString() },
+      { id:'gr_2', clientId:'u_c2', mentorId:'m1', rating:5, comment:'Profesyonel, samimi ve sonuç odaklı.', createdAt: offset(-15).toISOString() },
+      { id:'gr_3', clientId:'u_c3', mentorId:'m1', rating:4, comment:'Çok faydalı seanslar geçirdik.', createdAt: offset(-10).toISOString() },
+      { id:'gr_4', clientId:'u_c1', mentorId:'m2', rating:5, comment:'Girişimcilik vizyonumu tamamen değiştirdi.', createdAt: offset(-15).toISOString() },
+      { id:'gr_5', clientId:'u_c2', mentorId:'m3', rating:5, comment:'Akademik kariyerimde yol gösterici oldu.', createdAt: offset(-10).toISOString() }
+    ];
+    App.Storage.set(KEYS.GENERAL_REVIEWS, generalReviews);
+
     const subs = ['u_c1','u_c2','u_c3','u_c4'].map((uid, i) => ({
-      userId: uid,
-      plan: ['monthly','quarterly','yearly','monthly'][i],
+      userId: uid, plan: ['monthly','quarterly','yearly','monthly'][i],
       startDate: new Date(now.getTime() - 10*24*3600*1000).toISOString(),
       endDate: new Date(now.getTime() + [20,80,350,20][i]*24*3600*1000).toISOString()
     }));
     App.Storage.set(KEYS.SUBSCRIPTIONS, subs);
-
     App.Storage.set(KEYS.SEEDED, true);
   };
 
@@ -189,10 +250,76 @@ window.App = window.App || {};
   App.getMentorProfileForUser = function (user) {
     if (!user || user.role !== 'mentor') return null;
     const mentors = App.loadMentors();
-    if (user.linkedMentorId) {
-      return mentors.find(m => m.id === user.linkedMentorId) || null;
-    }
+    if (user.linkedMentorId) return mentors.find(m => m.id === user.linkedMentorId) || null;
     return mentors.find(m => m.userId === user.id) || null;
+  };
+
+  // ===== Welfare System =====
+  App.getClientWelfare = function (clientId) {
+    const ratings = App.Storage.get(KEYS.WELFARE_RATINGS, []).filter(r => r.clientId === clientId);
+    const total = ratings.reduce((s,r) => s + r.score, 0);
+    const cfg = App.getBadgeConfig();
+    const badges = cfg.clientBadges.filter(b => total >= b.threshold);
+    return { total, count: ratings.length, badges, ratings };
+  };
+
+  App.getMentorWelfare = function (mentorId) {
+    const ratings = App.Storage.get(KEYS.WELFARE_RATINGS, []).filter(r => r.mentorId === mentorId);
+    const total = ratings.reduce((s,r) => s + r.score, 0);
+    const cfg = App.getBadgeConfig();
+    const badges = cfg.mentorBadges.filter(b => total >= b.threshold);
+    return { total, count: ratings.length, badges, ratings };
+  };
+
+  App.getSessionNote = function (appointmentId) {
+    return App.Storage.get(KEYS.SESSION_NOTES, []).find(n => n.appointmentId === appointmentId) || null;
+  };
+
+  App.writeSessionNote = function (appointmentId, mentorId, clientId, summary) {
+    const notes = App.Storage.get(KEYS.SESSION_NOTES, []);
+    const existing = notes.find(n => n.appointmentId === appointmentId);
+    if (existing) { existing.summary = summary; }
+    else { notes.push({ id: App.uid('sn'), appointmentId, mentorId, clientId, summary, createdAt: new Date().toISOString() }); }
+    App.Storage.set(KEYS.SESSION_NOTES, notes);
+  };
+
+  App.getWelfareRating = function (appointmentId) {
+    return App.Storage.get(KEYS.WELFARE_RATINGS, []).find(r => r.appointmentId === appointmentId) || null;
+  };
+
+  App.submitWelfareRating = function (appointmentId, clientId, mentorId, score, comment) {
+    const ratings = App.Storage.get(KEYS.WELFARE_RATINGS, []);
+    const note = App.getSessionNote(appointmentId);
+    ratings.push({
+      id: App.uid('wr'), appointmentId, sessionNoteId: note?.id,
+      mentorId, clientId, score, comment: comment || '',
+      createdAt: new Date().toISOString()
+    });
+    App.Storage.set(KEYS.WELFARE_RATINGS, ratings);
+    const cw = App.getClientWelfare(clientId);
+    const cfg = App.getBadgeConfig();
+    const newBadge = cfg.clientBadges.find(b => b.threshold === cw.total || (cw.total >= b.threshold && cw.total - score < b.threshold));
+    return { welfare: cw, newBadge };
+  };
+
+  App.getGeneralReview = function (clientId, mentorId) {
+    return App.Storage.get(KEYS.GENERAL_REVIEWS, []).find(r => r.clientId === clientId && r.mentorId === mentorId) || null;
+  };
+
+  App.submitGeneralReview = function (clientId, mentorId, rating, comment) {
+    const reviews = App.Storage.get(KEYS.GENERAL_REVIEWS, []);
+    const existing = reviews.find(r => r.clientId === clientId && r.mentorId === mentorId);
+    if (existing) return null;
+    const rev = { id: App.uid('gr'), clientId, mentorId, rating, comment, createdAt: new Date().toISOString() };
+    reviews.push(rev);
+    App.Storage.set(KEYS.GENERAL_REVIEWS, reviews);
+    return rev;
+  };
+
+  App.getMentorGeneralRating = function (mentorId) {
+    const revs = App.Storage.get(KEYS.GENERAL_REVIEWS, []).filter(r => r.mentorId === mentorId);
+    if (!revs.length) return { avg: 0, count: 0, reviews: [] };
+    return { avg: parseFloat((revs.reduce((s,r)=>s+r.rating,0)/revs.length).toFixed(1)), count: revs.length, reviews: revs };
   };
 
   App.loadTrainings = function () { return window.SEED_TRAININGS || []; };
